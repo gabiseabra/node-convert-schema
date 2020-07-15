@@ -1,0 +1,17 @@
+{
+  "name": "jsmodel",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -r chai/register-expect test/**/*.spec.js",
+    "lint": "eslint --ext .ts src/ test/"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^7.4.0",
+    "mocha": "^8.0.1"
+  }
+}

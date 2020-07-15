@@ -1,0 +1,34 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "node": true,
+    "mocha": true,
+    "amd": true
+  },
+  "plugins": ["promise"],
+  "rules": {
+    "max-len": ["error", {"code": 150}],
+    "global-require": 0,
+    "no-console": "error",
+    "promise/always-return": "error",
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error",
+    "promise/catch-or-return": "error",
+    "promise/no-native": "off",
+    "promise/no-nesting": "error",
+    "promise/no-promise-in-callback": "error",
+    "promise/no-callback-in-promise": "error",
+    "promise/no-return-in-finally": "error",
+    "prefer-arrow-callback": "error",
+    "max-lines-per-function": ["error", { "max": 30}],
+    "max-depth": ["error", 4]
+  },
+  "overrides": [
+    {
+      "files": ["*Test.js"],
+      "rules": {
+        "max-lines-per-function": "off"
+      }
+    }
+  ]
+}
