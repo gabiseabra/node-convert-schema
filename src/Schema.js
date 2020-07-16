@@ -9,15 +9,15 @@ const defArrayOptions = {split: id, join: id}
 
 const format = (schema) => (obj) =>
   mapBoth(
-    (_, {src}) => src,
+    (key, {src = id}) => src(key),
     (key, {format}) => format(obj[key])
   )(schema)
 
 const parse = (schema) => (obj) =>
-  mapValues(({src, parse}) => parse(obj[src]))(schema)
+  mapValues((key, {parse, src = id}) => parse(obj[src(key)]))(schema)
 
 const normalize = (schema) => (obj) =>
-  mapValues(({normalize = id}, key) =>
+  mapValues((key, {normalize = id}) =>
     key in obj ? normalize(obj[key]) : undefined
   )(schema)
 
@@ -78,7 +78,10 @@ const Types = {
 }
 
 const Field = (src) =>
-  mapValues((fun) => (...args) => ({src, ...fun(...args)}))(Types)
+  mapValues((_, fun) => (...args) => ({
+    ...fun(...args),
+    src: typeof src == 'function' ? src : () => src
+  }))(Types)
 
 module.exports = {
   Types,

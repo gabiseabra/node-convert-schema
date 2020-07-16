@@ -8,7 +8,7 @@ const mapBoth = (mapKeys, mapValues) =>
     Object.assign(acc, {[mapKeys(key, value)]: mapValues(key, value)})
   )
 
-const mapValues = (fun) => mapBoth(id, (x, y) => fun(y, x))
+const mapValues = (fun) => mapBoth(id, fun)
 
 module.exports = {
   reduce,
