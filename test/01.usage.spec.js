@@ -9,12 +9,14 @@ class Person extends Model {
       name: S('nome').string(),
       preferences: S('preferências').object({
         spicy: S('picante').bool({truthy: 'sim', falsy: 'no'}),
-        cuisine: S('culinária').enum({
-          arabian: 'árabe',
-          japanese: 'japonêsa',
-          indian: 'indiana',
-          fastFood: 'fast-food'
-        })
+        cuisine: S('culinária').array(
+          S.enum({
+            arabian: 'árabe',
+            japanese: 'japonêsa',
+            indian: 'indiana',
+            fastFood: 'fast-food'
+          })
+        )
       })
     }
   }
@@ -28,7 +30,7 @@ describe('usage', () => {
       name: 'fulaninho',
       preferences: {
         spicy: true,
-        cuisine: 'indian'
+        cuisine: ['indian', 'japanese']
       }
     })
 
@@ -37,7 +39,7 @@ describe('usage', () => {
       nome: 'fulaninho',
       'preferências': {
         picante: 'sim',
-        'culinária': 'indiana'
+        'culinária': ['indiana', 'japonêsa']
       }
     })
   })

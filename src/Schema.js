@@ -5,6 +5,8 @@ const id = x => x
 
 const defBoolOptions = {truthy: true, falsy: false, parse: Boolean}
 
+const defArrayOptions = {split: id, join: id}
+
 const Types = {
   string(src) {
     return { src, parse: String, format: id };
@@ -23,11 +25,11 @@ const Types = {
     const e = new Enum(map);
     return { src, parse: e.key, format: e.value };
   },
-  array(src, { parse, format }, { separator = ';' } = {}) {
+  array(src, { parse, format }, { split, join } = defArrayOptions) {
     return {
       src,
-      parse: (x) => (x ? x.split(separator).map(parse) : []),
-      format: (x) => (format(x).join(separator)),
+      parse: (x) => [].concat(x ? split(x).map(parse) : []),
+      format: (x = []) => join(x.map(format)),
     };
   },
   object(src, mappings) {
@@ -46,5 +48,7 @@ const Types = {
 };
 
 const S = (src) => mapValues((fun) => (...args) => fun(src, ...args))(Types)
+
+Object.assign(S, mapValues((fun) => (...args) => fun(null, ...args))(Types))
 
 module.exports = {Types, S}
