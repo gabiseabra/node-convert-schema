@@ -7,6 +7,16 @@ const defBoolOptions = {truthy: true, falsy: false, parse: Boolean}
 
 const defArrayOptions = {split: id, join: id}
 
+const format = (schema) => (obj) => mapBoth(
+  (_, {src}) => src,
+  (key, {format}) => format(obj[key])
+)(schema)
+
+const parse = (schema) => (obj) => mapBoth(
+  id,
+  (_, {src, parse}) => parse(obj[src])
+)(schema)
+
 const Types = {
   string() {
     return { parse: String, format: id };
@@ -30,16 +40,10 @@ const Types = {
       format: (x = []) => join(x.map(format)),
     };
   },
-  object(mappings) {
+  shape(schema) {
     return {
-      parse: (obj) => mapBoth(
-        id,
-        (_, {src, parse}) => parse(obj[src])
-      )(mappings),
-      format: (obj) => mapBoth(
-        (_, {src}) => src,
-        (key, {format}) => format(obj[key])
-      )(mappings),
+      parse: parse(schema),
+      format: format(schema),
     }
   },
   model(Model) {
@@ -52,4 +56,11 @@ const Types = {
 
 const Field = (src) => mapValues((fun) => (...args) => ({src, ...fun(...args)}))(Types)
 
-module.exports = {Types, Field, T: Types, F: Field}
+module.exports = {
+  Types,
+  T: Types,
+  Field,
+  F: Field,
+  format,
+  parse
+}
