@@ -41,6 +41,12 @@ const Types = {
         (key, {format}) => format(obj[key])
       )(mappings),
     }
+  },
+  model(Model) {
+    return {
+      parse: x => Model.parse(x),
+      format: x => Model.format(x)
+    }
   }
 };
 
