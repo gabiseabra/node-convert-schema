@@ -1,4 +1,4 @@
-const {parse, format} = require('./Schema')
+const {parse, format, normalize} = require('./Schema')
 
 class Model {
   static get Schema() {
@@ -7,9 +7,14 @@ class Model {
 
   constructor(data) {
     const {Schema} = this.constructor
+    const normalizedData = normalize(Schema)(data)
     Object.keys(Schema).forEach((field) => {
-      this[field] = data[field]
+      this[field] = normalizedData[field]
     })
+  }
+
+  static normalize(data) {
+    return new this(data)
   }
 
   /**
