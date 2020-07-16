@@ -30,9 +30,9 @@ class Model {
    */
   static parse(srcData) {
     return new this(
-      reduceSchema(this.Schema, (acc, {key, src, format}) =>
-        Object.assign(acc, {[key]: format(srcData[key])})
-      )
+      reduce((acc, key, {src, parse}) =>
+        Object.assign(acc, {[key]: parse(srcData[src])})
+      )(this.Schema)
     )
   }
 }

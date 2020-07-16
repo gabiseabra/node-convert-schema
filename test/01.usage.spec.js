@@ -34,29 +34,33 @@ class Person extends Model {
 
 
 describe('usage', () => {
-  it('maps instance to source schema', () => {
-    const person = new Person({
-      id: 123,
-      name: 'fulaninho',
-      recipes: [
-        new Recipe({name: 'spaghetti', ingredients: ['pasta', 'water']})
-      ],
-      preferences: {
-        spicy: true,
-        cuisine: ['indian', 'japanese']
-      }
-    })
+  const srcData = {
+    id: 123,
+    nome: 'fulaninho',
+    receitas: [
+      {nome: 'spaghetti', ingredientes: ['pasta', 'water']},
+    ],
+    'preferências': {
+      picante: 'sim',
+      'culinária': ['indiana', 'japonêsa']
+    }
+  }
 
-    expect(Person.format(person)).to.deep.eq({
-      id: 123,
-      nome: 'fulaninho',
-      receitas: [
-        {nome: 'spaghetti', ingredientes: ['pasta', 'water']},
-      ],
-      'preferências': {
-        picante: 'sim',
-        'culinária': ['indiana', 'japonêsa']
-      }
-    })
+  const parsedData = {
+    id: 123,
+    name: 'fulaninho',
+    recipes: [{name: 'spaghetti', ingredients: ['pasta', 'water']}],
+    preferences: {
+      spicy: true,
+      cuisine: ['indian', 'japanese']
+    }
+  }
+
+  it('maps instance to source schema', () => {
+    expect(Person.format(new Person(parsedData))).to.deep.eq(srcData)
+  })
+
+  it('maps source schema to instance', () => {
+    expect(Person.parse(srcData)).to.deep.eq(new Person(parsedData))
   })
 })
