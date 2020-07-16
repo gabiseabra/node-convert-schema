@@ -22,25 +22,28 @@ const normalize = (schema) => (obj) =>
   )(schema)
 
 const Types = {
-  string() {
+  string(options = {}) {
     return {
       normalize: String,
       parse: String,
-      format: id
+      format: id,
+      ...options
     }
   },
-  integer() {
+  integer(options = {}) {
     return {
       normalize: parseInt,
       parse: parseInt,
-      format: id
+      format: id,
+      ...options
     }
   },
-  float() {
+  float(options = {}) {
     return {
       normalize: parseFloat,
       parse: parseFloat,
-      format: id
+      format: id,
+      ...options
     }
   },
   bool({truthy, falsy, check} = defBoolOptions) {

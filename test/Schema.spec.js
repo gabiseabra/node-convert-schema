@@ -1,60 +1,56 @@
-const {F, T, format, parse, normalize} = require('../src/Schema')
+const {F, T} = require('../src/Schema')
 
-const Person = {
-  id: F('id').integer(),
-  name: F('nome').string(),
-  preferences: F('preferências').shape({
-    spicy: F('picante').bool({truthy: 'sim', falsy: 'no'}),
-    cuisine: F('culinária').array(
-      T.enum({
-        arabian: 'árabe',
-        japanese: 'japonêsa',
-        indian: 'indiana',
-        fastFood: 'fast-food'
-      })
-    )
+const TestModel = T.shape({
+  int: F('INT').integer(),
+  lower: F('UPPER').string({
+    format: (x) => String(x).toUpperCase(),
+    parse: (x) => String(x).toLowerCase()
+  }),
+  shape: F('SHAPE').shape({
+    bool: F('BOOL').bool({truthy: 'T', falsy: 'F'}),
+    enum: F('ENUM').array(T.enum({a: 'A', b: 'B'}))
   })
-}
+})
 
 describe('Schema', () => {
-  const srcData = {
-    id: 123,
-    nome: 'fulaninho',
-    preferências: {
-      picante: 'sim',
-      culinária: ['indiana', 'japonêsa']
+  const encoded = {
+    int: 123,
+    lower: 'abc',
+    shape: {
+      bool: false,
+      enum: ['a', 'b']
     }
   }
 
-  const parsedData = {
-    id: 123,
-    name: 'fulaninho',
-    preferences: {
-      spicy: true,
-      cuisine: ['indian', 'japanese']
+  const decoded = {
+    INT: 123,
+    UPPER: 'ABC',
+    SHAPE: {
+      BOOL: 'F',
+      ENUM: ['A', 'B']
     }
   }
 
   describe('format', () => {
     it('maps object from target schema to source schema', () => {
-      expect(format(Person)(parsedData)).to.deep.eq(srcData)
+      expect(TestModel.format(encoded)).to.deep.eq(decoded)
     })
   })
 
   describe('parse', () => {
     it('maps object from source schema to target schema', () => {
-      expect(parse(Person)(srcData)).to.deep.eq(parsedData)
+      expect(TestModel.parse(decoded)).to.deep.eq(encoded)
     })
   })
 
   describe('normalize', () => {
     it('maps object from target schema to target schema', () => {
       expect(
-        normalize(Person)({
-          ...parsedData,
-          id: '123'
+        TestModel.normalize({
+          ...encoded,
+          int: '123'
         })
-      ).to.deep.eq(parsedData)
+      ).to.deep.eq(encoded)
     })
   })
 })
