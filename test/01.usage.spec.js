@@ -1,16 +1,16 @@
-const { S } = require("../src/Schema");
+const { F, T } = require("../src/Schema");
 const Model = require("../src/Model");
 const {turquoise}=require("color-name");
 
 class Person extends Model {
   static get Schema() {
     return {
-      id: S('id').number(),
-      name: S('nome').string(),
-      preferences: S('preferências').object({
-        spicy: S('picante').bool({truthy: 'sim', falsy: 'no'}),
-        cuisine: S('culinária').array(
-          S.enum({
+      id: F('id').number(),
+      name: F('nome').string(),
+      preferences: F('preferências').object({
+        spicy: F('picante').bool({truthy: 'sim', falsy: 'no'}),
+        cuisine: F('culinária').array(
+          T.enum({
             arabian: 'árabe',
             japanese: 'japonêsa',
             indian: 'indiana',
