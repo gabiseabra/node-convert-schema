@@ -17,12 +17,12 @@ class Enum {
 
   key(obj) {
     if (typeof obj === 'object' && 'key' in obj) return this.key(obj.key)
-    return this[obj].key
+    if (obj in this) return this[obj].key
   }
 
   value(obj) {
     if (typeof obj === 'object' && 'key' in obj) return this.value(obj.key)
-    return this[obj].value
+    if (obj in this) return this[obj].value
   }
 }
 

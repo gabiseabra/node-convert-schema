@@ -3,6 +3,10 @@ const {getIn, mapBoth, mapValues} = require('./utils')
 
 const id = (x) => x
 
+const guard = (fun = id) => (x) => (typeof x === 'undefined' ? x : fun(x))
+
+const def = (fn, value) => (x) => fn(typeof x === 'undefined' ? value : x)
+
 const defBoolOptions = {truthy: true, falsy: false, check: Boolean}
 
 const defArrayOptions = {split: id, join: id}
@@ -17,40 +21,38 @@ const parse = (schema) => (obj) =>
   mapValues((key, {parse, src = id}) => parse(getIn(obj, src(key))))(schema)
 
 const normalize = (schema) => (obj) =>
-  mapValues((key, {normalize = id}) =>
-    key in obj ? normalize(obj[key]) : undefined
-  )(schema)
+  mapValues((key, {normalize = id}) => normalize(obj[key]))(schema)
 
 const Types = {
   string(options = {}) {
     return {
-      normalize: String,
-      parse: String,
+      normalize: guard(String),
+      parse: guard(String),
       format: id,
       ...options
     }
   },
   integer(options = {}) {
     return {
-      normalize: parseInt,
-      parse: parseInt,
+      normalize: guard(parseInt),
+      parse: guard(parseInt),
       format: id,
       ...options
     }
   },
   float(options = {}) {
     return {
-      normalize: parseFloat,
-      parse: parseFloat,
+      normalize: guard(parseFloat),
+      parse: guard(parseFloat),
       format: id,
       ...options
     }
   },
   bool({truthy, falsy, check} = defBoolOptions) {
     return {
-      normalize: check,
-      parse: (x) => x === truthy || (x !== falsy && check(x)),
-      format: (x) => (x ? truthy : falsy)
+      normalize: guard(check),
+      parse: guard((x) => x === truthy || (x !== falsy && check(x))),
+      format: guard((x) => (x ? truthy : falsy))
     }
   },
   enum(map) {
@@ -63,20 +65,24 @@ const Types = {
   },
   array({parse, format, normalize = id}, {split, join} = defArrayOptions) {
     return {
-      normalize: (x = []) => x.map(normalize),
-      parse: (x) => [].concat(x ? split(x).map(parse) : []),
-      format: (x = []) => join(x.map(format))
+      normalize: guard((x) => x.map(normalize)),
+      parse: guard((x) => [].concat(x ? split(x).map(parse) : [])),
+      format: guard((x) => join(x.map(format)))
     }
   },
   shape(schema) {
     return {
-      normalize: normalize(schema),
-      parse: parse(schema),
-      format: format(schema)
+      normalize: def(normalize(schema), {}),
+      parse: def(parse(schema), {}),
+      format: def(format(schema), {})
     }
   },
   model(Model) {
-    return Model
+    return {
+      normalize: def((x) => Model.normalize(x), {}),
+      parse: def((x) => Model.parse(x), {}),
+      format: def((x) => Model.format(x), {})
+    }
   }
 }
 

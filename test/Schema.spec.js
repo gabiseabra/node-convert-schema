@@ -3,8 +3,8 @@ const {F, T} = require('../src/Schema')
 const TestModel = T.shape({
   int: F('INT').integer(),
   lower: F('UPPER').string({
-    format: (x) => String(x).toUpperCase(),
-    parse: (x) => String(x).toLowerCase()
+    format: (x) => (x ? String(x).toUpperCase() : x),
+    parse: (x) => (x ? String(x).toLowerCase() : x)
   }),
   flat: F(['NESTED', 'X']).string(),
   nested: F().shape({x: F('FLAT').string()}),
@@ -26,6 +26,17 @@ describe('Schema', () => {
     }
   }
 
+  const emptyEncoded = {
+    int: undefined,
+    lower: undefined,
+    flat: undefined,
+    nested: {x: undefined},
+    shape: {
+      bool: undefined,
+      enum: undefined
+    }
+  }
+
   const decoded = {
     INT: 123,
     UPPER: 'ABC',
@@ -37,26 +48,49 @@ describe('Schema', () => {
     }
   }
 
+  const emptyDecoded = {
+    INT: undefined,
+    UPPER: undefined,
+    NESTED: {X: undefined},
+    FLAT: undefined,
+    SHAPE: {
+      BOOL: undefined,
+      ENUM: undefined
+    }
+  }
+
   describe('format', () => {
-    it('maps object from target schema to source schema', () => {
+    it('decodes encoded structure', () => {
       expect(TestModel.format(encoded)).to.deep.eq(decoded)
+    })
+
+    it('guard against undefined values', () => {
+      expect(TestModel.format({})).to.deep.eq(emptyDecoded)
     })
   })
 
   describe('parse', () => {
-    it('maps object from source schema to target schema', () => {
+    it('encodes decoded structure', () => {
       expect(TestModel.parse(decoded)).to.deep.eq(encoded)
+    })
+
+    it('guard against undefined values', () => {
+      expect(TestModel.parse({})).to.deep.eq(emptyEncoded)
     })
   })
 
   describe('normalize', () => {
-    it('maps object from target schema to target schema', () => {
+    it('normalizes encoded structure', () => {
       expect(
         TestModel.normalize({
           ...encoded,
           int: '123'
         })
       ).to.deep.eq(encoded)
+    })
+
+    it('guard against undefined values', () => {
+      expect(TestModel.normalize({})).to.deep.eq(emptyEncoded)
     })
   })
 })
