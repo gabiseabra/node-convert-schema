@@ -72,15 +72,17 @@ const Types = {
       encode: guard((x) => join(x.map(encode)))
     }
   },
-  shape(schema) {
+  shape(Schema) {
     return {
-      normalize: def(normalize(schema), {}),
-      decode: def(decode(schema), {}),
-      encode: def(encode(schema), {})
+      Schema,
+      normalize: def(normalize(Schema), {}),
+      decode: def(decode(Schema), {}),
+      encode: def(encode(Schema), {})
     }
   },
   model(Model) {
     return {
+      Schema: Model.Schema,
       normalize: def((x) => Model.normalize(x), {}),
       decode: def((x) => Model.decode(x), {}),
       encode: def((x) => Model.encode(x), {})
