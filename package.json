@@ -1,14 +1,25 @@
 {
-  "name": "map-schema",
+  "name": "convert-schema",
   "version": "1.0.0",
-  "description": "",
+  "description": "Library for mapping objects between two schemas.",
   "main": "index.js",
+  "license": "MIT",
+  "author": "gabiseabra <gabriela.lima.se@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabiseabra/node-convert-schema.git"
+  },
+  "keywords": [
+    "schema",
+    "model",
+    "structure",
+    "convert",
+    "map"
+  ],
   "scripts": {
     "test": "mocha -r chai/register-expect test/**/*.spec.js",
     "lint": "eslint --ext .js src/ test/"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^7.4.0",
