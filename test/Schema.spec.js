@@ -6,6 +6,7 @@ const TestModel = T.shape({
     format: (x) => String(x).toUpperCase(),
     parse: (x) => String(x).toLowerCase()
   }),
+  flat: F(['NESTED', 'X']).string(),
   shape: F('SHAPE').shape({
     bool: F('BOOL').bool({truthy: 'T', falsy: 'F'}),
     enum: F('ENUM').array(T.enum({a: 'A', b: 'B'}))
@@ -16,6 +17,7 @@ describe('Schema', () => {
   const encoded = {
     int: 123,
     lower: 'abc',
+    flat: 'abc',
     shape: {
       bool: false,
       enum: ['a', 'b']
@@ -25,6 +27,7 @@ describe('Schema', () => {
   const decoded = {
     INT: 123,
     UPPER: 'ABC',
+    NESTED: {X: 'abc'},
     SHAPE: {
       BOOL: 'F',
       ENUM: ['A', 'B']

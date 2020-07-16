@@ -1,5 +1,5 @@
 const Enum = require('./Enum')
-const {mapBoth, mapValues} = require('./utils')
+const {getIn, mapBoth, mapValues} = require('./utils')
 
 const id = (x) => x
 
@@ -14,7 +14,7 @@ const format = (schema) => (obj) =>
   )(schema)
 
 const parse = (schema) => (obj) =>
-  mapValues((key, {parse, src = id}) => parse(obj[src(key)]))(schema)
+  mapValues((key, {parse, src = id}) => parse(getIn(obj, src(key))))(schema)
 
 const normalize = (schema) => (obj) =>
   mapValues((key, {normalize = id}) =>
