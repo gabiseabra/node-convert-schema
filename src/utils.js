@@ -6,7 +6,7 @@ const reduce = (fun) => (obj) =>
 const setIn = (obj, $path, value) => {
   let path = [].concat($path)
   const key = path.shift()
-  if (!key) return Object.assign(obj, value)
+  if (!key) return Object.assign(obj, value || {})
   if (path.length == 0) return {...obj, [key]: value}
   else return {...obj, [key]: setIn(obj[key] || {}, path, value)}
 }
