@@ -14,14 +14,16 @@ const defArrayOptions = {split: id, join: id}
 const encode = (schema) => (obj) =>
   mapBoth(
     (key, {src = id}) => src(key),
-    (key, {encode}) => encode(obj[key])
+    (key, {encode}) => encode(obj[key], obj)
   )(schema)
 
 const decode = (schema) => (obj) =>
-  mapValues((key, {decode, src = id}) => decode(getIn(obj, src(key))))(schema)
+  mapValues((key, {decode, src = id}) => decode(getIn(obj, src(key)), obj))(
+    schema
+  )
 
 const normalize = (schema) => (obj) =>
-  mapValues((key, {normalize = id}) => normalize(obj[key]))(schema)
+  mapValues((key, {normalize = id}) => normalize(obj[key]), obj)(schema)
 
 const Types = {
   string(options = {}) {
