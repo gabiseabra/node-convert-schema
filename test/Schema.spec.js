@@ -3,8 +3,8 @@ const {F, T} = require('../src/Schema')
 const TestModel = T.shape({
   int: F('INT').integer(),
   lower: F('UPPER').string({
-    format: (x) => (x ? String(x).toUpperCase() : x),
-    parse: (x) => (x ? String(x).toLowerCase() : x)
+    encode: (x) => (x ? String(x).toUpperCase() : x),
+    decode: (x) => (x ? String(x).toLowerCase() : x)
   }),
   flat: F(['NESTED', 'X']).string(),
   nested: F().shape({x: F('FLAT').string()}),
@@ -15,7 +15,7 @@ const TestModel = T.shape({
 })
 
 describe('Schema', () => {
-  const encoded = {
+  const decoded = {
     int: 123,
     lower: 'abc',
     flat: 'a',
@@ -26,7 +26,7 @@ describe('Schema', () => {
     }
   }
 
-  const emptyEncoded = {
+  const emptyDecoded = {
     int: undefined,
     lower: undefined,
     flat: undefined,
@@ -37,7 +37,7 @@ describe('Schema', () => {
     }
   }
 
-  const decoded = {
+  const encoded = {
     INT: 123,
     UPPER: 'ABC',
     NESTED: {X: 'a'},
@@ -48,7 +48,7 @@ describe('Schema', () => {
     }
   }
 
-  const emptyDecoded = {
+  const emptyEncoded = {
     INT: undefined,
     UPPER: undefined,
     NESTED: {X: undefined},
@@ -59,38 +59,38 @@ describe('Schema', () => {
     }
   }
 
-  describe('format', () => {
-    it('decodes encoded structure', () => {
-      expect(TestModel.format(encoded)).to.deep.eq(decoded)
+  describe('encode', () => {
+    it('encodes decoded structure', () => {
+      expect(TestModel.encode(decoded)).to.deep.eq(encoded)
     })
 
-    it('guard against undefined values', () => {
-      expect(TestModel.format({})).to.deep.eq(emptyDecoded)
+    it('guards against undefined values', () => {
+      expect(TestModel.encode({})).to.deep.eq(emptyEncoded)
     })
   })
 
-  describe('parse', () => {
-    it('encodes decoded structure', () => {
-      expect(TestModel.parse(decoded)).to.deep.eq(encoded)
+  describe('decode', () => {
+    it('decodes encoded structure', () => {
+      expect(TestModel.decode(encoded)).to.deep.eq(decoded)
     })
 
-    it('guard against undefined values', () => {
-      expect(TestModel.parse({})).to.deep.eq(emptyEncoded)
+    it('guards against undefined values', () => {
+      expect(TestModel.decode({})).to.deep.eq(emptyDecoded)
     })
   })
 
   describe('normalize', () => {
-    it('normalizes encoded structure', () => {
+    it('normalizes decoded structure', () => {
       expect(
         TestModel.normalize({
-          ...encoded,
+          ...decoded,
           int: '123'
         })
-      ).to.deep.eq(encoded)
+      ).to.deep.eq(decoded)
     })
 
-    it('guard against undefined values', () => {
-      expect(TestModel.normalize({})).to.deep.eq(emptyEncoded)
+    it('guards against undefined values', () => {
+      expect(TestModel.normalize({})).to.deep.eq(emptyDecoded)
     })
   })
 })

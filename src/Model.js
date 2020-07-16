@@ -1,4 +1,4 @@
-const {parse, format, normalize} = require('./Schema')
+const {decode, encode, normalize} = require('./Schema')
 
 class Model {
   static get Schema() {
@@ -18,21 +18,21 @@ class Model {
   }
 
   /**
-   * Format an instance of self into an object of the source structure
+   * encode an instance of self into an object of the source structure
    * @param {self} data
    * @param {object}
    */
-  static format(data) {
-    return format(this.Schema)(data)
+  static encode(data) {
+    return encode(this.Schema)(data)
   }
 
   /**
-   * Parse source data into an instance of this class
+   * decode source data into an instance of this class
    * @param {object} data
    * @return {this}
    */
-  static parse(data) {
-    return new this(parse(this.Schema)(data))
+  static decode(data) {
+    return new this(decode(this.Schema)(data))
   }
 }
 

@@ -18,13 +18,13 @@ const MySchema = T.shape({
   someEnum: F('some_enum').enum({A: 'a', B: 'b'})
 })
 
-MySchema.parse({
+MySchema.decode({
   some_string: '123',
   some_enum: 'a'
 })
 // > { someString: '123', someEnum: 'A' }
 
-MySchema.format({
+MySchema.encode({
   someString: '123',
   someEnum: 'A'
 })
