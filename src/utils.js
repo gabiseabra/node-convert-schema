@@ -1,6 +1,7 @@
-const id = x => x
+const id = (x) => x
 
-const reduce = (fun) => (obj) => Object.keys(obj).reduce((acc, name) => fun(acc, name, obj[name]), {})
+const reduce = (fun) => (obj) =>
+  Object.keys(obj).reduce((acc, name) => fun(acc, name, obj[name]), {})
 
 const mapBoth = (mapKeys, mapValues) =>
   reduce((acc, key, value) =>

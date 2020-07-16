@@ -1,4 +1,4 @@
-const {reduce} = require("./utils")
+const {parse, format} = require('./Schema')
 
 class Model {
   static get Schema() {
@@ -14,13 +14,11 @@ class Model {
 
   /**
    * Format an instance of self into an object of the source structure
-   * @param {self} object
+   * @param {self} data
    * @param {object}
    */
-  static format(object) {
-    return reduce((acc, key, {src, format}) =>
-      Object.assign(acc, {[src]: format(object[key])})
-    )(this.Schema)
+  static format(data) {
+    return format(this.Schema)(data)
   }
 
   /**
@@ -28,13 +26,9 @@ class Model {
    * @param {object} data
    * @return {this}
    */
-  static parse(srcData) {
-    return new this(
-      reduce((acc, key, {src, parse}) =>
-        Object.assign(acc, {[key]: parse(srcData[src])})
-      )(this.Schema)
-    )
+  static parse(data) {
+    return new this(parse(this.Schema)(data))
   }
 }
 
-module.exports = Model;
+module.exports = Model

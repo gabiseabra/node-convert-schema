@@ -1,34 +1,56 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["prettier", "eslint:recommended"],
+  "plugins": ["prettier"],
   "env": {
     "node": true,
     "mocha": true,
     "amd": true
   },
-  "plugins": ["promise"],
+  "parserOptions": {
+      "ecmaVersion": 2018
+  },
   "rules": {
-    "max-len": ["error", {"code": 150}],
+    "max-len": ["error", {"code": 90}],
     "global-require": 0,
     "no-console": "error",
-    "promise/always-return": "error",
-    "promise/no-return-wrap": "error",
-    "promise/param-names": "error",
-    "promise/catch-or-return": "error",
-    "promise/no-native": "off",
-    "promise/no-nesting": "error",
-    "promise/no-promise-in-callback": "error",
-    "promise/no-callback-in-promise": "error",
-    "promise/no-return-in-finally": "error",
     "prefer-arrow-callback": "error",
     "max-lines-per-function": ["error", { "max": 30}],
-    "max-depth": ["error", 4]
+    "max-depth": ["error", 4],
+    "prettier/prettier": [
+      "error",
+      {
+        "bracketSpacing": false,
+        "singleQuote": true,
+        "semi": false,
+        "arrowParens": "always",
+        "trailingComma": "none"
+      }
+    ],
+    "array-bracket-spacing": [2, "never"],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "ignore",
+        "objects": "never",
+        "imports": "never",
+        "exports": "never",
+        "functions": "ignore"
+      }
+    ],
+    "linebreak-style": ["error", "unix"],
+    "object-curly-spacing": ["error", "never"],
+    "quotes": ["error", "single"],
+    "semi": ["error", "never"]
   },
   "overrides": [
     {
-      "files": ["*Test.js"],
+      "files": ["*.spec.js"],
       "rules": {
         "max-lines-per-function": "off"
       }
     }
-  ]
+  ],
+  "globals": {
+    "expect": true
+  }
 }

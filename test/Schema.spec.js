@@ -1,4 +1,4 @@
-const { F, T, format, parse } = require("../src/Schema");
+const {F, T, format, parse} = require('../src/Schema')
 
 const Person = {
   id: F('id').number(),
@@ -16,14 +16,13 @@ const Person = {
   })
 }
 
-
 describe('Schema', () => {
   const srcData = {
     id: 123,
     nome: 'fulaninho',
-    'preferências': {
+    preferências: {
       picante: 'sim',
-      'culinária': ['indiana', 'japonêsa']
+      culinária: ['indiana', 'japonêsa']
     }
   }
 
@@ -37,7 +36,7 @@ describe('Schema', () => {
   }
 
   describe('format', () => {
-  it('maps parsed object to source schema', () => {
+    it('maps parsed object to source schema', () => {
       expect(format(Person)(parsedData)).to.deep.eq(srcData)
     })
   })
