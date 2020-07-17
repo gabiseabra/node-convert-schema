@@ -4,8 +4,7 @@
 
 There are many libraries out there for declaring object schemas and validations,
 but none quite fit for conversion of objects between different structures.
-This library is meant to solve just that: Mapping object values and keys back
-and forth between two schemas.
+This library is meant to solve just that: Mapping object values and keys between two schemas.
 
 ## Usage
 

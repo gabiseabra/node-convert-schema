@@ -1,4 +1,5 @@
-const {F, T} = require('../src/Schema')
+const {expect} = require('chai')
+const {F, T, encodeKey} = require('..')
 
 const TestModel = T.shape({
   int: F('INT').integer(),
@@ -58,6 +59,13 @@ describe('Schema', () => {
       ENUM: undefined
     }
   }
+
+  describe('encodeKey', () => {
+    it('encodes a path', () => {
+      expect(encodeKey(TestModel.Schema)(['nested', 'x'])).to.deep.eq('FLAT')
+      expect(encodeKey(TestModel.Schema)('flat')).to.deep.eq(['NESTED', 'X'])
+    })
+  })
 
   describe('encode', () => {
     it('encodes decoded structure', () => {

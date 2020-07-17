@@ -1,21 +1,39 @@
 const Enum = require('./Enum')
-const {getIn, mapBoth, mapValues} = require('./utils')
+const {
+  getPath,
+  getIn,
+  mapBoth,
+  mapKeys,
+  mapValues,
+  interleave
+} = require('./utils')
 
 const id = (x) => x
+
+const last = (x) => x.slice(-1)
 
 const guard = (fun = id) => (x) => (typeof x === 'undefined' ? x : fun(x))
 
 const def = (fn, value) => (x) => fn(typeof x === 'undefined' ? value : x)
 
-const defBoolOptions = {truthy: true, falsy: false, check: Boolean}
+const mapEncodedKey = (key, {src}) => src(key)
+const mapEncodedValue = (obj) => (key, {encode}) => encode(obj[key], obj)
 
-const defArrayOptions = {split: id, join: id}
+const encodeKey = (schema) => ($path) => {
+  const path = getPath($path)
+  return getIn(
+    schema,
+    interleave(path, Array(path.length - 1).fill('Schema'))
+  ).src(last(path))
+}
+
+const encodeKeys = mapKeys(mapEncodedKey)
+
+const encodeValues = (schema) => (obj) =>
+  mapValues(mapEncodedValue(obj))(schema)
 
 const encode = (schema) => (obj) =>
-  mapBoth(
-    (key, {src = id}) => src(key),
-    (key, {encode}) => encode(obj[key], obj)
-  )(schema)
+  mapBoth(mapEncodedKey, mapEncodedValue(obj))(schema)
 
 const decode = (schema) => (obj) =>
   mapValues((key, {decode, src = id}) => decode(getIn(obj, src(key)), obj))(
@@ -24,6 +42,10 @@ const decode = (schema) => (obj) =>
 
 const normalize = (schema) => (obj) =>
   mapValues((key, {normalize = id}) => normalize(obj[key]), obj)(schema)
+
+const defBoolOptions = {truthy: true, falsy: false, check: Boolean}
+
+const defArrayOptions = {split: id, join: id}
 
 const Types = {
   string(options = {}) {
@@ -101,6 +123,9 @@ module.exports = {
   T: Types,
   Field,
   F: Field,
+  encodeKey,
+  encodeKeys,
+  encodeValues,
   encode,
   decode,
   normalize
