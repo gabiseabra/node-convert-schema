@@ -1,4 +1,4 @@
-const {decode, encode, normalize} = require('./types')
+const {decode, encode, normalize} = require('./schema')
 
 class Model {
   static get Schema() {

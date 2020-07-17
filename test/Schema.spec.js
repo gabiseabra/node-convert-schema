@@ -76,8 +76,13 @@ describe('Schema', () => {
 
   describe('encodeKey', () => {
     it('encodes a path', () => {
-      expect(encodeKey(TestModel.Schema)(['nested', 'x'])).to.deep.eq('FLAT')
+      expect(encodeKey(TestModel.Schema)(['nested', 'x'])).to.deep.eq(['FLAT'])
       expect(encodeKey(TestModel.Schema)('flat')).to.deep.eq(['NESTED', 'X'])
+      expect(encodeKey(TestModel.Schema)('shape')).to.deep.eq(['SHAPE'])
+      expect(encodeKey(TestModel.Schema)(['shape', 'bool'])).to.deep.eq([
+        'SHAPE',
+        'BOOL'
+      ])
     })
   })
 

@@ -1,27 +1,25 @@
 const {
-  getPath,
   getIn,
   setIn,
   reduce,
   mapBoth,
   mapKeys,
   mapValues,
-  interleave
+  getPath
 } = require('./utils')
 
 const id = (x) => x
-
-const last = (x) => x.slice(-1)
 
 const mapEncodedKey = (key, {src = id}) => src(key)
 const mapEncodedValue = (obj) => (key, {encode = id}) => encode(obj[key])
 
 const encodeKey = (schema) => ($path) => {
   const path = getPath($path)
-  return getIn(
-    schema,
-    interleave(path, Array(path.length - 1).fill('Schema'))
-  ).src(last(path))
+  const key = path.shift()
+  const def = schema[key]
+  const encodedPath = [].concat((def.src || id)(key)).filter(Boolean)
+  if (path.length === 0) return encodedPath
+  return encodedPath.concat(encodeKey(def.Schema)(path))
 }
 
 const encodeKeys = mapKeys(mapEncodedKey)
