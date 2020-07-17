@@ -1,19 +1,18 @@
+const T = require('./src/types')
 const {
-  T,
-  S,
+  encode,
   encodeKey,
   encodeKeys,
   encodeValues,
   decode,
-  encode,
   normalize
-} = require('./src/Schema')
+} = require('./src/schema')
 const Enum = require('./src/Enum')
 const Model = require('./src/Model')
 
 module.exports = {
   T,
-  S,
+  ...T,
   encode,
   encodeKey,
   encodeKeys,

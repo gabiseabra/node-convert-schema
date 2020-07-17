@@ -1,18 +1,32 @@
 const {expect} = require('chai')
-const {F, T, encodeKey} = require('..')
+const {
+  f,
+  string,
+  integer,
+  bool,
+  array,
+  shape,
+  key,
+  flatten,
+  Enum,
+  encodeKey
+} = require('..')
 
-const TestModel = T.shape({
-  int: F('INT').integer(),
-  lower: F('UPPER').string({
+const TestModel = shape({
+  int: f(key('INT'), integer),
+  lower: f(key('UPPER'), {
     encode: (x) => (x ? String(x).toUpperCase() : x),
     decode: (x) => (x ? String(x).toLowerCase() : x)
   }),
-  flat: F(['NESTED', 'X']).string(),
-  nested: F().shape({x: F('FLAT').string()}),
-  shape: F('SHAPE').shape({
-    bool: F('BOOL').bool({truthy: 'T', falsy: 'F'}),
-    enum: F('ENUM').array(T.enum({a: 'A', b: 'B'}))
-  })
+  flat: f(key(['NESTED', 'X']), string),
+  nested: f(flatten, shape({x: f(key('FLAT'), string)})),
+  shape: f(
+    key('SHAPE'),
+    shape({
+      bool: f(key('BOOL'), bool),
+      enum: f(key('ENUM'), array(new Enum({a: 'A', b: 'B'})))
+    })
+  )
 })
 
 describe('Schema', () => {
@@ -44,7 +58,7 @@ describe('Schema', () => {
     NESTED: {X: 'a'},
     FLAT: 'b',
     SHAPE: {
-      BOOL: 'F',
+      BOOL: false,
       ENUM: ['A', 'B']
     }
   }

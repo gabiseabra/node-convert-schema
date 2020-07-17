@@ -1,20 +1,22 @@
 # convert-schema
 
-## Motivation
-
-There are many libraries out there for declaring object schemas and validations,
-but none quite fit for conversion of objects between different structures.
-This library is meant to solve just that: Mapping object values and keys between two schemas.
+Declare transformations of object's values and keys in functional, vanilla javascript.
 
 ## Usage
 
 ```js
-const {T, F} = require('map-schema')
+const {f, string, shape, key, Enum} = require('map-schema')
 
 // Declare mapping
-const MySchema = T.shape({
-  someString: F('some_string').string(),
-  someEnum: F('some_enum').enum({A: 'a', B: 'b'})
+const MySchema = shape({
+  someString: f(
+    key('some_string'),
+    string
+  ),
+  someEnum: f(
+    key('some_enum'),
+    new Enum({A: 'a', B: 'b'})
+  )
 })
 
 MySchema.decode({

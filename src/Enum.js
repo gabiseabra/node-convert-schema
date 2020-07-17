@@ -1,14 +1,27 @@
 class Enum {
   constructor(map) {
+    this.normalize = this.normalize.bind(this)
+    this.decode = this.decode.bind(this)
+    this.encode = this.encode.bind(this)
+
     Object.keys(map).forEach((key) => {
       const value = map[key]
       const def = {key, value}
       this[key] = def
       this[value] = def
     })
-    this.get = this.get.bind(this)
-    this.key = this.key.bind(this)
-    this.value = this.value.bind(this)
+  }
+
+  normalize(value) {
+    return this.key(value)
+  }
+
+  decode(value) {
+    return this.key(value)
+  }
+
+  encode(value) {
+    return this.value(value)
   }
 
   get(key) {
