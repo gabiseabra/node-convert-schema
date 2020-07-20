@@ -1,6 +1,10 @@
 const {decode, encode, normalize} = require('./schema')
 
 class Model {
+  static set Schema(value) {
+    Object.defineProperty(this, 'Schema', {value})
+  }
+
   static get Schema() {
     throw new Error('schema is not defined')
   }
