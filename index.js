@@ -1,5 +1,6 @@
 const T = require('./src/types')
 const {
+  getDefinition,
   encode,
   encodeKey,
   encodeKeys,
@@ -13,6 +14,7 @@ const Model = require('./src/Model')
 module.exports = {
   T,
   ...T,
+  getDefinition,
   encode,
   encodeKey,
   encodeKeys,

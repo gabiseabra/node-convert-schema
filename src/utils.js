@@ -3,6 +3,9 @@ const id = (x) => x
 const reduce = (fun) => (obj) =>
   Object.keys(obj).reduce((acc, name) => fun(acc, name, obj[name], obj), {})
 
+const interleave = (a, b) =>
+  a.reduce((acc, _, idx) => [...acc, a[idx], b[idx]], []).slice(0, -1)
+
 const getPath = (path = []) => [].concat(path)
 
 const setIn = (obj, $path, value) => {
@@ -30,6 +33,7 @@ const mapKeys = (fun) => mapBoth(fun, id)
 const mapValues = (fun) => mapBoth(id, fun)
 
 module.exports = {
+  interleave,
   getPath,
   getIn,
   setIn,

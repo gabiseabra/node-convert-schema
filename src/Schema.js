@@ -5,13 +5,19 @@ const {
   mapBoth,
   mapKeys,
   mapValues,
-  getPath
+  getPath,
+  interleave
 } = require('./utils')
 
 const id = (x) => x
 
 const mapEncodedKey = (key, {src = id}) => src(key)
 const mapEncodedValue = (obj) => (key, {encode = id}) => encode(obj[key])
+
+const getDefinition = (schema) => ($path) => {
+  const path = getPath(path)($path)
+  return getIn(schema, interleave(path, Array(path.length - 1).fill('Schema')))
+}
 
 const encodeKey = (schema) => ($path) => {
   const path = getPath($path)
@@ -51,6 +57,7 @@ const normalize = (schema) => (obj) =>
   mapValues((key, {normalize = id}) => normalize(obj[key]))(schema)
 
 module.exports = {
+  getDefinition,
   encodeKey,
   encodeKeys,
   encodeValues,
