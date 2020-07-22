@@ -2,9 +2,11 @@ const {encode, decode, normalize} = require('./schema')
 
 const id = (x) => x
 
-const guard = (fun = id) => (x) => (typeof x === 'undefined' ? x : fun(x))
+const guard = (fun = id) => (x, ...args) =>
+  typeof x === 'undefined' ? x : fun(x, ...args)
 
-const def = (fn, value) => (x) => fn(typeof x === 'undefined' ? value : x)
+const def = (fn, value) => (x, ...args) =>
+  fn(typeof x === 'undefined' ? value : x, ...args)
 
 const scalar = (fun) => ({normalize: fun, decode: fun, encode: fun})
 
@@ -41,9 +43,9 @@ function shape(Schema) {
 function model(Model) {
   return {
     Schema: Model.Schema,
-    normalize: def((x) => Model.normalize(x), {}),
-    decode: def((x) => Model.decode(x), {}),
-    encode: def((x) => Model.encode(x), {})
+    normalize: def((x, ctx) => Model.normalize(x, ctx), {}),
+    decode: def((x, ctx) => Model.decode(x, ctx), {}),
+    encode: def((x, ctx) => Model.encode(x, ctx), {})
   }
 }
 

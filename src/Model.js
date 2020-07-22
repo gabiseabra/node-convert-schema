@@ -9,16 +9,16 @@ class Model {
     throw new Error('schema is not defined')
   }
 
-  constructor(data) {
+  constructor(data, ctx) {
     const {Schema} = this.constructor
-    const normalizedData = normalize(Schema)(data)
+    const normalizedData = normalize(Schema)(data, ctx)
     Object.keys(Schema).forEach((field) => {
       this[field] = normalizedData[field]
     })
   }
 
-  static normalize(data) {
-    return new this(data)
+  static normalize(data, ctx) {
+    return new this(data, ctx)
   }
 
   /**
@@ -26,8 +26,8 @@ class Model {
    * @param {self} data
    * @param {object}
    */
-  static encode(data) {
-    return encode(this.Schema)(data)
+  static encode(data, ctx) {
+    return encode(this.Schema)(data, ctx)
   }
 
   /**
@@ -35,8 +35,8 @@ class Model {
    * @param {object} data
    * @return {this}
    */
-  static decode(data) {
-    return new this(decode(this.Schema)(data))
+  static decode(data, ctx) {
+    return new this(decode(this.Schema)(data, ctx))
   }
 }
 
