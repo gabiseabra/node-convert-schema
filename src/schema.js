@@ -15,7 +15,7 @@ const mapEncodedKey = (key, {src = id}) => src(key)
 const mapEncodedValue = (obj) => (key, {encode = id}) => encode(obj[key])
 
 const getDefinition = (schema) => ($path) => {
-  const path = getPath(path)($path)
+  const path = getPath($path)
   return getIn(schema, interleave(path, Array(path.length - 1).fill('Schema')))
 }
 
