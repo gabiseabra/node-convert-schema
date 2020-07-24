@@ -16,12 +16,12 @@ const buildContext = (key, obj, ctx = {}) => ({
   ...ctx,
   key,
   path: [].concat(ctx.path || [], key),
-  parent: obj
+  parent: obj || {}
 })
 
 const mapEncodedKey = (key, {src = id}) => src(key)
 const mapEncodedValue = (obj, ctx) => (key, {encode = id}) =>
-  encode(obj[key], buildContext(key, obj, ctx))
+  encode((obj || {})[key], buildContext(key, obj, ctx))
 
 const getDefinition = (schema) => ($path) => {
   const path = getPath($path)
@@ -51,7 +51,7 @@ const decodeKeys = (schema) => (obj, ctx = {}) =>
     return setIn(
       acc,
       key,
-      encode(getIn(obj, srcKey), buildContext(key, obj, ctx))
+      encode(getIn(obj || {}, srcKey), buildContext(key, obj, ctx))
     )
   }, {})(schema)
 
@@ -61,18 +61,18 @@ const decodeValues = (schema) => (obj, ctx = {}) =>
     return setIn(
       acc,
       srcKey,
-      decode(getIn(obj, srcKey), buildContext(key, obj, ctx))
+      decode(getIn(obj || {}, srcKey), buildContext(key, obj, ctx))
     )
   }, {})(schema)
 
 const decode = (schema) => (obj, ctx = {}) =>
   mapValues((key, {decode = id, src = id}) =>
-    decode(getIn(obj, src(key)), buildContext(key, obj, ctx))
+    decode(getIn(obj || {}, src(key)), buildContext(key, obj, ctx))
   )(schema)
 
 const normalize = (schema) => (obj, ctx = {}) =>
   mapValues((key, {normalize = id}) =>
-    normalize(obj[key], buildContext(key, obj, ctx))
+    normalize((obj || {})[key], buildContext(key, obj, ctx))
   )(schema)
 
 module.exports = {
