@@ -55,6 +55,12 @@ function key(src) {
 
 const flatten = key()
 
+const computed = (fun) => ({
+  normalize: fun,
+  encode: fun,
+  decode: id
+})
+
 const composeFn = (a, b) => {
   if (typeof a === 'function' && typeof b === 'function')
     return (value, obj) => b(a(value, obj), obj)
@@ -83,6 +89,7 @@ module.exports = {
   model,
   key,
   flatten,
+  computed,
   compose,
   f: compose
 }

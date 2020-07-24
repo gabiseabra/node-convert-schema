@@ -8,23 +8,33 @@ const {
   shape,
   key,
   flatten,
+  computed,
   Enum,
   encodeKey
 } = require('..')
 
+const lowerUPPER = {
+  encode: (x) => (x ? String(x).toUpperCase() : x),
+  decode: (x) => (x ? String(x).toLowerCase() : x)
+}
+
 const TestModel = shape({
   int: f(key('INT'), integer),
-  lower: f(key('UPPER'), {
-    encode: (x) => (x ? String(x).toUpperCase() : x),
-    decode: (x) => (x ? String(x).toLowerCase() : x)
-  }),
+  lower: f(key('UPPER'), lowerUPPER),
   flat: f(key(['NESTED', 'X']), string),
   nested: f(flatten, shape({x: f(key('FLAT'), string)})),
   shape: f(
     key('SHAPE'),
     shape({
       bool: f(key('BOOL'), bool),
-      enum: f(key('ENUM'), array(new Enum({a: 'A', b: 'B'})))
+      enum: f(key('ENUM'), array(new Enum({a: 'A', b: 'B'}))),
+      computed: f(
+        key('COMPUTED'),
+        computed((_, {parent}) =>
+          parent.enum ? parent.enum.join('') : undefined
+        ),
+        lowerUPPER
+      )
     })
   )
 })
@@ -37,7 +47,8 @@ describe('Schema', () => {
     nested: {x: 'b'},
     shape: {
       bool: false,
-      enum: ['a', 'b']
+      enum: ['a', 'b'],
+      computed: 'ab'
     }
   }
 
@@ -48,7 +59,8 @@ describe('Schema', () => {
     nested: {x: undefined},
     shape: {
       bool: undefined,
-      enum: undefined
+      enum: undefined,
+      computed: undefined
     }
   }
 
@@ -59,7 +71,8 @@ describe('Schema', () => {
     FLAT: 'b',
     SHAPE: {
       BOOL: false,
-      ENUM: ['A', 'B']
+      ENUM: ['A', 'B'],
+      COMPUTED: 'AB'
     }
   }
 
@@ -70,7 +83,8 @@ describe('Schema', () => {
     FLAT: undefined,
     SHAPE: {
       BOOL: undefined,
-      ENUM: undefined
+      ENUM: undefined,
+      COMPUTED: undefined
     }
   }
 
