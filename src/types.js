@@ -2,8 +2,10 @@ const {encode, decode, normalize} = require('./schema')
 
 const id = (x) => x
 
-const guard = (fun = id) => (x, ...args) =>
-  typeof x === 'undefined' ? x : fun(x, ...args)
+const isEmpty = (x) => typeof x === 'undefined' || x === null
+
+const guard = (fun = id, check = isEmpty) => (x, ...args) =>
+  check(x) ? x : fun(x, ...args)
 
 const def = (fn, value) => (x, ...args) =>
   fn(typeof x === 'undefined' ? value : x, ...args)
@@ -61,11 +63,7 @@ const computed = (fun) => ({
   decode: id
 })
 
-const composeFn = (a, b) => {
-  if (typeof a === 'function' && typeof b === 'function')
-    return (value, obj) => b(a(value, obj), obj)
-  return b
-}
+const composeFn = (a = id, b = id) => (x, ...args) => b(a(x, ...args), ...args)
 
 function compose(...defs) {
   return defs.reduce(
@@ -83,7 +81,6 @@ function compose(...defs) {
 
 module.exports = {
   ...Scalars,
-  guard,
   array,
   shape,
   model,
