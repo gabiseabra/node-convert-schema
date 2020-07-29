@@ -1,5 +1,3 @@
-const id = (x) => x
-
 const reduce = (fun) => (obj) =>
   Object.keys(obj).reduce((acc, name) => fun(acc, name, obj[name], obj), {})
 
@@ -29,16 +27,11 @@ const mapBoth = (mapKeys, mapValues) =>
     setIn(acc, mapKeys(key, value, obj), mapValues(key, value, obj))
   )
 
-const mapKeys = (fun) => mapBoth(fun, id)
-const mapValues = (fun) => mapBoth(id, fun)
-
 module.exports = {
   interleave,
   getPath,
   getIn,
   setIn,
   reduce,
-  mapBoth,
-  mapKeys,
-  mapValues
+  mapBoth
 }

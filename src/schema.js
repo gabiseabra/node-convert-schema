@@ -1,81 +1,85 @@
-const {
-  getIn,
-  setIn,
-  reduce,
-  mapBoth,
-  mapKeys,
-  mapValues,
-  getPath,
-  interleave
-} = require('./utils')
+const {getIn, setIn, reduce, mapBoth, getPath, interleave} = require('./utils')
 
 const id = (x) => x
+
+const curry1 = (fun) => (a, ...b) =>
+  b.length == 0 ? (...b) => fun(a, ...b) : fun(a, ...b)
 
 const buildContext = (key, obj, ctx = {}) => ({
   root: obj,
   ...ctx,
   key,
+  value: (obj || {})[key],
   path: [].concat(ctx.path || [], key),
   parent: obj || {}
 })
 
-const mapEncodedKey = (key, {src = id}) => src(key)
-const mapEncodedValue = (obj, ctx) => (key, {encode = id}) =>
-  encode((obj || {})[key], buildContext(key, obj, ctx))
+const reduceSchema = (fun, acc) =>
+  curry1((schema, obj, ctx = {}) =>
+    reduce(
+      (acc, key, def) => fun(acc, def, buildContext(key, obj, ctx)),
+      acc
+    )(schema)
+  )
 
-const getDefinition = (schema) => ($path) => {
+const mapWithContext = (fun, obj, ctx) => (key, def) =>
+  fun(def, buildContext(key, obj, ctx))
+
+const mapSchema = (mapKeys, mapValues) =>
+  curry1((schema, obj, ctx = {}) =>
+    mapBoth(
+      mapWithContext(mapKeys, obj, ctx),
+      mapWithContext(mapValues, obj, ctx)
+    )(schema)
+  )
+
+const mapSchemaKeys = (fun) => mapSchema(fun, (_, {value}) => value)
+const mapSchemaValues = (fun) => mapSchema((_, {key}) => key, fun)
+
+const getDefinition = curry1((schema, $path) => {
   const path = getPath($path)
   return getIn(schema, interleave(path, Array(path.length - 1).fill('Schema')))
-}
+})
 
-const encodeKey = (schema) => ($path) => {
+const encodeKey = curry1((schema, $path) => {
   const path = getPath($path)
   const key = path.shift()
   const def = schema[key]
   const encodedPath = [].concat((def.src || id)(key)).filter(Boolean)
   if (path.length === 0) return encodedPath
   return encodedPath.concat(encodeKey(def.Schema)(path))
-}
+})
 
-const encodeKeys = mapKeys(mapEncodedKey)
+const mapEncodedKey = ({src = id}, {key}) => src(key)
+const mapEncodedValue = ({encode = id}, ctx) => encode(ctx.value, ctx)
 
-const encodeValues = (schema) => (obj, ctx = {}) =>
-  mapValues(mapEncodedValue(obj, ctx))(schema)
+const encodeKeys = mapSchemaKeys(mapEncodedKey)
 
-const encode = (schema) => (obj, ctx = {}) =>
-  mapBoth(mapEncodedKey, mapEncodedValue(obj, ctx))(schema)
+const encodeValues = mapSchemaValues(mapEncodedValue)
 
-const decodeKeys = (schema) => (obj, ctx = {}) =>
-  reduce((acc, key, {encode = id, src = id}) => {
-    const srcKey = src(key)
-    return setIn(
-      acc,
-      key,
-      encode(getIn(obj || {}, srcKey), buildContext(key, obj, ctx))
-    )
-  }, {})(schema)
+const encode = mapSchema(mapEncodedKey, mapEncodedValue)
 
-const decodeValues = (schema) => (obj, ctx = {}) =>
-  reduce((acc, key, {decode = id, src = id}) => {
-    const srcKey = src(key)
-    return setIn(
-      acc,
-      srcKey,
-      decode(getIn(obj || {}, srcKey), buildContext(key, obj, ctx))
-    )
-  }, {})(schema)
+const decodeKeys = reduceSchema((acc, {encode = id, src = id}, ctx) =>
+  setIn(acc, ctx.key, encode(getIn(ctx.parent, src(ctx.key)), ctx))
+)
 
-const decode = (schema) => (obj, ctx = {}) =>
-  mapValues((key, {decode = id, src = id}) =>
-    decode(getIn(obj || {}, src(key)), buildContext(key, obj, ctx))
-  )(schema)
+const decodeValues = reduceSchema((acc, {encode = id, src = id}, ctx) =>
+  setIn(acc, src(ctx.key), encode(getIn(ctx.parent, src(ctx.key)), ctx))
+)
 
-const normalize = (schema) => (obj, ctx = {}) =>
-  mapValues((key, {normalize = id}) =>
-    normalize((obj || {})[key], buildContext(key, obj, ctx))
-  )(schema)
+const decode = mapSchemaValues(({decode = id, src = id}, ctx) =>
+  decode(getIn(ctx.parent || {}, src(ctx.key)), ctx)
+)
+
+const normalize = mapSchemaValues(({normalize = id}, ctx) =>
+  normalize(ctx.value, ctx)
+)
 
 module.exports = {
+  reduceSchema,
+  mapSchema,
+  mapSchemaKeys,
+  mapSchemaValues,
   getDefinition,
   encodeKey,
   encodeKeys,
