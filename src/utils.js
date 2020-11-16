@@ -9,7 +9,7 @@ const getPath = (path = []) => [].concat(path)
 const setIn = (obj, $path, value) => {
   let path = getPath($path)
   const key = path.shift()
-  if (!key) return Object.assign(obj, value || {})
+  if (!key) return typeof value === 'object' ? Object.assign(obj, value || {}) : value
   if (path.length == 0) return {...obj, [key]: value}
   else return {...obj, [key]: setIn(obj[key] || {}, path, value)}
 }
