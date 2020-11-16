@@ -72,7 +72,7 @@ function compose(...defs) {
       ...b,
       Schema: Object.assign({}, a.Schema, b.Schema),
       normalize: composeFn(a.normalize, b.normalize),
-      decode: composeFn(a.decode, b.decode),
+      decode: composeFn(b.decode, a.decode),
       encode: composeFn(a.encode, b.encode)
     }),
     {}
